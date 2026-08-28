@@ -88,7 +88,7 @@ BULL = "bull"
 BEAR = "bear"
 NEUTRAL = "neutral"
 FUNDING_WARNED: set[str] = set()
-DEFAULT_REFERRAL_LINK = "https://www.bybit.com/invite?ref=BITNOMIK"
+DEFAULT_REFERRAL_LINK = "https://www.binance.com/register?ref=BITNOMIK"
 SEPARATOR = "_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _"
 DISCLAIMER = "Educational market analysis only. Not financial advice. Always manage your risk."
 
