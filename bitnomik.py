@@ -1,5 +1,5 @@
 """
-bitNOMIK live signal monitor for Binance through CCXT Pro.
+ bitNOMIK live signal monitor for Bybit through CCXT Pro.
 
 Install:
     pip install "ccxt[pro]" requests
@@ -88,7 +88,7 @@ BULL = "bull"
 BEAR = "bear"
 NEUTRAL = "neutral"
 FUNDING_WARNED: set[str] = set()
-DEFAULT_REFERRAL_LINK = "https://www.binance.com/register?ref=BITNOMIK"
+DEFAULT_REFERRAL_LINK = "https://www.bybit.com/invite?ref=BITNOMIK"
 SEPARATOR = "_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _"
 DISCLAIMER = "Educational market analysis only. Not financial advice. Always manage your risk."
 
@@ -1362,7 +1362,7 @@ async def watch_pair(exchange: Any, monitor: SignalMonitor, pair: str, swap_pair
     )
 
 
-def create_binance_exchange(market_types: list[str]) -> Any:
+def create_bybit_exchange(market_types: list[str]) -> Any:
     timeout_ms = int(os.getenv("BITNOMIK_HTTP_TIMEOUT_MS", "30000"))
     proxy = os.getenv("BITNOMIK_PROXY", "").strip() or os.getenv("HTTPS_PROXY", "").strip()
     config: dict[str, Any] = {
@@ -1375,7 +1375,7 @@ def create_binance_exchange(market_types: list[str]) -> Any:
     }
     if proxy:
         config["httpsProxy"] = proxy
-    return ccxtpro.binance(config)
+    return ccxtpro.bybit(config)
 
 
 async def load_markets_with_retry(exchange: Any, attempts: int = 4) -> None:
@@ -1386,10 +1386,10 @@ async def load_markets_with_retry(exchange: Any, attempts: int = 4) -> None:
             return
         except NetworkError as error:
             last_error = error
-            print(f"Binance market load failed (attempt {attempt}/{attempts}): {error}")
+            print(f"Bybit market load failed (attempt {attempt}/{attempts}): {error}")
             if attempt < attempts:
                 await asyncio.sleep(2 * attempt)
-    raise last_error or NetworkError("Binance market load failed")
+    raise last_error or NetworkError("Bybit market load failed")
 
 
 async def run(pairs: list[str], cooldown_seconds: int, dry_run: bool, channel_gap_seconds: int = CHANNEL_GAP_SECONDS) -> None:
@@ -1408,7 +1408,7 @@ async def run(pairs: list[str], cooldown_seconds: int, dry_run: bool, channel_ga
     else:
         publisher = TelegramPublisher(token, channel_id, referral_link)
 
-    exchange = create_binance_exchange(["spot"])
+    exchange = create_bybit_exchange(["spot"])
     monitor = SignalMonitor(publisher, cooldown_seconds, referral_link, channel_gap_seconds=channel_gap_seconds)
     try:
         await load_markets_with_retry(exchange)
@@ -1419,13 +1419,13 @@ async def run(pairs: list[str], cooldown_seconds: int, dry_run: bool, channel_ga
             await exchange.load_markets(reload=True)
             swap_markets_loaded = True
         except NetworkError as error:
-            print(f"Binance futures markets skipped: {error}")
+            print(f"Bybit linear markets skipped: {error}")
             exchange.options["fetchMarkets"] = ["spot"]
 
         available_pairs = [pair for pair in pairs if pair in exchange.markets]
         missing_pairs = sorted(set(pairs) - set(available_pairs))
         if missing_pairs:
-            raise ValueError(f"Unknown Binance pairs: {', '.join(missing_pairs)}")
+            raise ValueError(f"Unknown Bybit pairs: {', '.join(missing_pairs)}")
 
         swap_pairs: dict[str, str | None] = {}
         for pair in available_pairs:
@@ -1454,7 +1454,7 @@ def main() -> None:
     parser.add_argument(
         "--pairs",
         default=os.getenv("BITNOMIK_PAIRS", DEFAULT_PAIRS),
-        help="Comma-separated Binance symbols, e.g. BTC/USDT,ETH/USDT",
+        help="Comma-separated Bybit symbols, e.g. BTC/USDT,ETH/USDT",
     )
     parser.add_argument(
         "--cooldown",
