@@ -88,9 +88,11 @@ BULL = "bull"
 BEAR = "bear"
 NEUTRAL = "neutral"
 FUNDING_WARNED: set[str] = set()
-DEFAULT_REFERRAL_LINK = "https://www.binance.com/register?ref=BITNOMIK"
+DEFAULT_REFERRAL_LINK = "https://t.me/solana_trojanbot?start=r-hoocem5t7wsi"
 SEPARATOR = "_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _"
 DISCLAIMER = "Educational market analysis only. Not financial advice. Always manage your risk."
+
+
 
 
 def env_float(name: str, default: float) -> float:
@@ -284,7 +286,7 @@ def parse_clock(observed_at: str | None) -> tuple[str, str]:
 def referral_footer(referral_link: str = "") -> str:
     link = referral_link or DEFAULT_REFERRAL_LINK
     if random.randint(1, 100) > 65:
-        return f"🔗 **GET EXCLUSIVE Binance DISCOUNT ON YOUR FIRST TRANSACTION**\n\n{link}"
+        return f"⚡️ Execute in 1-Click via Telegram:\n\n{link}"
     return ""
 
 
@@ -295,14 +297,12 @@ def compose_desk_message(
     live_price: Any,
     body_lines: list[str],
     referral_link: str,
+    analysis_or_signal_type: str,
 ) -> str:
     date_str, time_str = parse_clock(observed_at)
     footer = referral_footer(referral_link)
     lines = [
-        "Welcome to bitNOMIK Signal Monitor\n",
-        f"🔥 Crypto MARKET DESK | {title} for {pair} 📊",
-        SEPARATOR,
-        f"Asset: {pair}",
+        f"{pair} | {analysis_or_signal_type}",
         f"Time: {date_str} at {time_str}",
         "",
         f"💰 **Live Price:** ${price(live_price)}",
@@ -382,6 +382,7 @@ def build_imbalance_message(
             signal,
         ],
         referral_link,
+        "Buy/Sell Imbalance",
     )
 
 
@@ -418,6 +419,7 @@ def build_wall_message(
             signal,
         ],
         referral_link,
+        "Support/Resistance Wall",
     )
 
 
@@ -444,6 +446,7 @@ def build_spread_message(
             "🟡 Signal: Liquidity is thinning — trade with caution",
         ],
         referral_link,
+        "Spread Widening",
     )
 
 
@@ -478,6 +481,7 @@ def build_wall_removal_message(
             signal,
         ],
         referral_link,
+        "Wall Removal",
     )
 
 
@@ -513,6 +517,7 @@ def build_whale_message(
             signal,
         ],
         referral_link,
+        "Whale Trade",
     )
 
 
@@ -539,6 +544,7 @@ def build_pressure_message(
             signal,
         ],
         referral_link,
+        "Buy/Sell Pressure",
     )
 
 
@@ -565,6 +571,7 @@ def build_volume_spike_message(
             "🟡 Signal: Unusual activity",
         ],
         referral_link,
+        "Volume Spike",
     )
 
 
@@ -592,6 +599,7 @@ def build_rapid_move_message(
             signal,
         ],
         referral_link,
+        "Rapid Price Move",
     )
 
 
@@ -625,6 +633,7 @@ def build_high_low_break_message(
             signal,
         ],
         referral_link,
+        "24h High/Low Break",
     )
 
 
@@ -651,6 +660,7 @@ def build_funding_message(
             signal,
         ],
         referral_link,
+        "Funding",
     )
 
 
@@ -695,7 +705,7 @@ def build_message_for_pair_ticker(
 
     footer = referral_footer(referral_link)
     lines = [
-        f"🔥 Crypto MARKET DESK | TICKER & INDICATORS for {pair} 📊",
+        f"{pair} | Ticker & Indicators",
         SEPARATOR,
         f"Time: {date_str} at {time_str}",
         "",
